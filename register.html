@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація — Міст</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .auth-page {
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 60px 5% 100px;
+        }
+
+        .auth-page h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .auth-page .subtitle {
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+        }
+
+        .role-toggle {
+            display: flex;
+            background-color: #1e293b;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 28px;
+        }
+
+        .role-toggle button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .role-toggle button.active {
+            background-color: #38bdf8;
+            color: #0f172a;
+        }
+
+        form {
+            background-color: #1e293b;
+            padding: 28px;
+            border-radius: 12px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+
+        .translator-note {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 18px;
+        }
+
+        .consent {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .consent input {
+            margin-top: 3px;
+        }
+
+        .submit-btn {
+            width: 100%;
+        }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .switch-link a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        [data-translator-only] {
+            display: none;
+        }
+
+        body.role-perekladach [data-translator-only] {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Міст 🤟</a>
+        <nav>
+            <a href="index.html#features">Можливості</a>
+            <a href="dovidnyk.html">Довідник спільноти</a>
+        </nav>
+    </header>
+
+    <section class="auth-page">
+        <h1>Створити акаунт</h1>
+        <p class="subtitle">Обери, як саме ти хочеш долучитись</p>
+
+        <div class="role-toggle">
+            <button type="button" id="btn-korystuvach" class="active" onclick="setRole('korystuvach')">Я користувач</button>
+            <button type="button" id="btn-perekladach" onclick="setRole('perekladach')">Я перекладач</button>
+        </div>
+
+        <div class="translator-note" data-translator-only>
+            Як перекладач ти зможеш записувати слова й фрази українською жестовою мовою, щоб допомогти навчити модель розпізнавання. Твої записи спершу перевірить модератор.
+        </div>
+
+        <form onsubmit="event.preventDefault(); alert('Форма поки не підключена до бекенду — це макет інтерфейсу.');">
+            <div class="field">
+                <label for="name">Ім'я</label>
+                <input type="text" id="name" placeholder="Твоє ім'я" required>
+            </div>
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="pошта@example.com" required>
+            </div>
+            <div class="field">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" placeholder="Мінімум 8 символів" required minlength="8">
+            </div>
+
+            <div class="consent" data-translator-only>
+                <input type="checkbox" id="consent-translator">
+                <label for="consent-translator">Погоджуюсь, що мої відеозаписи жестів використовуватимуться для навчання моделі розпізнавання жестової мови.</label>
+            </div>
+
+            <div class="consent">
+                <input type="checkbox" id="consent-terms" required>
+                <label for="consent-terms">Погоджуюсь з умовами використання та політикою конфіденційності.</label>
+            </div>
+
+            <button type="submit" class="btn submit-btn">Зареєструватись</button>
+        </form>
+
+        <p class="switch-link">Вже маєш акаунт? <a href="#">Увійти</a></p>
+    </section>
+
+    <footer>
+        &copy; 2026 Міст. Проєкт для доступного спілкування.
+    </footer>
+
+    <script>
+        function setRole(role) {
+            document.body.classList.toggle('role-perekladach', role === 'perekladach');
+            document.getElementById('btn-korystuvach').classList.toggle('active', role === 'korystuvach');
+            document.getElementById('btn-perekladach').classList.toggle('active', role === 'perekladach');
+        }
+
+        // Якщо перейшли за посиланням register.html?role=perekladach — одразу вмикаємо потрібну роль
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('role') === 'perekladach') {
+            setRole('perekladach');
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Довідник спільноти — Міст</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .section-block {
+            margin-bottom: 48px;
+        }
+
+        .section-block h2 {
+            font-size: 1.3rem;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .center-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .center-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .center-item h3 {
+            font-size: 1.05rem;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .center-item p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .utog-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .utog-card p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            max-width: 500px;
+        }
+
+        .event-item {
+            border-left: 3px solid #38bdf8;
+            padding-left: 16px;
+            margin-bottom: 16px;
+        }
+
+        .event-item .date {
+            color: #38bdf8;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .event-item h3 {
+            font-size: 1rem;
+            color: #f1f5f9;
+            margin: 4px 0;
+        }
+
+        .event-item p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .suggest-note {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Міст 🤟</a>
+        <nav>
+            <a href="index.html#features">Можливості</a>
+            <a href="dovidnyk.html">Довідник спільноти</a>
+        </nav>
+        <div class="nav-auth">
+            <a href="register.html" class="btn-outline">Увійти</a>
+            <a href="register.html" class="btn">Реєстрація</a>
+        </div>
+    </header>
+
+    <section class="page">
+        <h1>Довідник спільноти</h1>
+        <p class="subtitle">Центри, організації та події для глухих людей в Україні</p>
+
+        <div class="section-block">
+            <h2>Українське товариство глухих</h2>
+            <div class="card utog-card">
+                <p>УТОГ — всеукраїнська громадська організація, що об'єднує людей з порушеннями слуху та захищає їхні права.</p>
+                <a href="https://utog.org" target="_blank" rel="noopener" class="btn-outline">Перейти на сайт УТОГ</a>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h2>Центри для глухих</h2>
+            <div class="center-list">
+                <div class="card center-item">
+                    <div>
+                        <h3>Обласне відділення УТОГ, Львів</h3>
+                        <p>вул. Приклад, 12, Львів · (032) 000-00-00</p>
+                    </div>
+                </div>
+                <div class="card center-item">
+                    <div>
+                        <h3>Київський центр реабілітації глухих</h3>
+                        <p>вул. Приклад, 45, Київ · (044) 000-00-00</p>
+                    </div>
+                </div>
+                <div class="card center-item">
+                    <div>
+                        <h3>Обласне відділення УТОГ, Харків</h3>
+                        <p>вул. Приклад, 8, Харків · (057) 000-00-00</p>
+                    </div>
+                </div>
+            </div>
+            <p class="suggest-note">Знаєш центр, якого немає у списку? Незабаром зʼявиться можливість запропонувати додати його.</p>
+        </div>
+
+        <div class="section-block">
+            <h2>Найближчі події</h2>
+            <div class="card">
+                <div class="event-item">
+                    <div class="date">14 вересня 2026</div>
+                    <h3>Безкоштовний курс основ жестової мови</h3>
+                    <p>Львів, Обласне відділення УТОГ</p>
+                </div>
+                <div class="event-item">
+                    <div class="date">21 вересня 2026</div>
+                    <h3>Зустріч спільноти глухих та чуючих</h3>
+                    <p>Київ, Центр реабілітації глухих</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 Міст. Проєкт для доступного спілкування.
+    </footer>
+
+</body>
+</html>

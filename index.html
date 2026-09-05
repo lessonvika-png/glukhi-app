@@ -4,34 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Міст — переклад української жестової мови</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #0f172a;
-            color: #f1f5f9;
-            line-height: 1.6;
-        }
-
-        header {
-            padding: 24px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1e293b;
-        }
-
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #38bdf8;
-        }
-
         .hero {
             max-width: 800px;
             margin: 0 auto;
@@ -51,34 +25,13 @@
             margin-bottom: 32px;
         }
 
-        .btn {
-            display: inline-block;
-            background-color: #38bdf8;
-            color: #0f172a;
-            padding: 14px 32px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.2s;
-        }
-
-        .btn:hover {
-            background-color: #0ea5e9;
-        }
-
         .features {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 5% 100px;
+            padding: 40px 5% 60px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 24px;
-        }
-
-        .feature-card {
-            background-color: #1e293b;
-            padding: 28px;
-            border-radius: 12px;
         }
 
         .feature-card h3 {
@@ -92,19 +45,57 @@
             font-size: 0.95rem;
         }
 
-        footer {
-            text-align: center;
-            padding: 24px;
-            color: #64748b;
-            font-size: 0.85rem;
-            border-top: 1px solid #1e293b;
+        .feature-card a {
+            display: inline-block;
+            margin-top: 14px;
+            font-size: 0.9rem;
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        .feature-card a:hover {
+            text-decoration: underline;
+        }
+
+        .translator-cta {
+            max-width: 1000px;
+            margin: 0 auto 100px;
+            padding: 0 5%;
+        }
+
+        .translator-cta .card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .translator-cta h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .translator-cta p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            max-width: 480px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">Міст 🤟</div>
+        <a href="index.html" class="logo">Міст 🤟</a>
+        <nav>
+            <a href="index.html#features">Можливості</a>
+            <a href="dovidnyk.html">Довідник спільноти</a>
+        </nav>
+        <div class="nav-auth">
+            <a href="register.html" class="btn-outline">Увійти</a>
+            <a href="register.html" class="btn">Реєстрація</a>
+        </div>
     </header>
 
     <section class="hero">
@@ -114,35 +105,44 @@
             переклад української жестової мови в реальному часі,
             навчання жестів та довідник для спільноти глухих.
         </p>
-        <a href="#features" class="btn">Дізнатись більше</a>
+        <a href="register.html" class="btn">Почати</a>
     </section>
 
     <section class="features" id="features">
-        <div class="feature-card">
+        <div class="card feature-card">
             <h3>Навчання жестів</h3>
             <p>Вивчай українську жестову мову крок за кроком, у форматі, схожому на Duolingo.</p>
+            <a href="register.html">Почати навчання →</a>
         </div>
-        <div class="feature-card">
+        <div class="card feature-card">
             <h3>Переклад у реальному часі</h3>
             <p>Мовлення перетворюється на жести-аватар, а жести — на текст і голос.</p>
+            <a href="register.html">Скоро →</a>
         </div>
-        <div class="feature-card">
+        <div class="card feature-card">
             <h3>Переклад медіа</h3>
-            <p>Заванж подкаст чи відео — отримай переклад жестовою мовою.</p>
+            <p>Завантаж подкаст чи відео — отримай переклад жестовою мовою.</p>
+            <a href="register.html">Скоро →</a>
         </div>
-        <div class="feature-card">
+        <div class="card feature-card">
             <h3>Довідник спільноти</h3>
-            <p>Локації центрів, події та новини для глухих людей по Львову.</p>
+            <p>Локації центрів, події та новини для глухих людей по всій Україні.</p>
+            <a href="dovidnyk.html">Переглянути довідник →</a>
+        </div>
+    </section>
+
+    <section class="translator-cta">
+        <div class="card">
+            <div>
+                <h3>Ти перекладач жестової мови?</h3>
+                <p>Допоможи покращити програму — записуй слова та фрази, щоб навчити модель розпізнавати українську жестову мову.</p>
+            </div>
+            <a href="register.html?role=perekladach" class="btn">Стати перекладачем</a>
         </div>
     </section>
 
     <footer>
         &copy; 2026 Міст. Проєкт для доступного спілкування.
-            <section style="text-align: center; padding: 20px; color: #38bdf8;">
-        <p>✅ Тест деплою: якщо бачиш цей напис на сайті — автооновлення працює!</p>
-    </section>
-
-    <footer>
     </footer>
 
 </body>
