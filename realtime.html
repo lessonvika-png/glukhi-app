@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Переклад у реальному часі — Міст</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .role-pick {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .role-card {
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .role-card:hover {
+            border-color: #334155;
+        }
+
+        .role-card.selected {
+            border-color: #38bdf8;
+        }
+
+        .role-card .icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .role-card h3 {
+            font-size: 1.05rem;
+            color: #f1f5f9;
+            margin-bottom: 6px;
+        }
+
+        .role-card p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .link-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .link-field input {
+            flex: 1;
+            padding: 11px 14px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+        }
+
+        .explainer {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Міст 🤟</a>
+        <nav>
+            <a href="index.html#features">Можливості</a>
+            <a href="dovidnyk.html">Довідник спільноти</a>
+        </nav>
+        <div class="nav-auth">
+            <a href="register.html" class="btn-outline">Увійти</a>
+            <a href="register.html" class="btn">Реєстрація</a>
+        </div>
+    </header>
+
+    <section class="page">
+        <h1>Переклад у реальному часі</h1>
+        <p class="subtitle">Обери свою роль, щоб почати дзвінок</p>
+
+        <div class="role-pick">
+            <div class="card role-card" onclick="selectRole(this, 'глуха')">
+                <div class="icon">🤟</div>
+                <h3>Я глухий(а)</h3>
+                <p>Побачиш співрозмовника та переклад його мовлення у вигляді субтитрів або жестів-аватара</p>
+            </div>
+            <div class="card role-card" onclick="selectRole(this, 'чуюча')">
+                <div class="icon">🔊</div>
+                <h3>Я чуючий(а)</h3>
+                <p>Почуєш озвучений переклад жестів співрозмовника</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="link-field">
+                <input type="text" id="room-link" placeholder="Встав посилання на дзвінок або створи нове" readonly value="mist.app/call/xk29a1">
+                <button class="btn-outline" onclick="navigator.clipboard.writeText(document.getElementById('room-link').value)">Копіювати</button>
+            </div>
+            <button class="btn" onclick="alert('Відеозв\'язок поки не підключено — це макет інтерфейсу.')">Розпочати дзвінок</button>
+            <p class="explainer">Надішли це посилання співрозмовнику — коли він(вона) приєднається, дзвінок почнеться автоматично.</p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 Міст. Проєкт для доступного спілкування.
+    </footer>
+
+    <script>
+        function selectRole(el, role) {
+            document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+    </script>
+
+</body>
+</html>

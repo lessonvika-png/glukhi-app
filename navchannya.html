@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навчання жестів — Міст</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .lesson-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .lesson-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .lesson-item h3 {
+            font-size: 1.05rem;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .lesson-item p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .lesson-item.locked {
+            opacity: 0.55;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #94a3b8;
+        }
+
+        .badge.ready {
+            color: #38bdf8;
+            border-color: #38bdf8;
+        }
+
+        .gate-card {
+            text-align: center;
+            padding: 40px 28px;
+        }
+
+        .gate-card p {
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Міст 🤟</a>
+        <nav>
+            <a href="index.html#features">Можливості</a>
+            <a href="dovidnyk.html">Довідник спільноти</a>
+        </nav>
+        <div class="nav-auth">
+            <a href="register.html" class="btn-outline">Увійти</a>
+            <a href="register.html" class="btn">Реєстрація</a>
+        </div>
+    </header>
+
+    <section class="page">
+        <h1>Навчання жестів</h1>
+        <p class="subtitle">Прогрес зберігається на акаунті — потрібна реєстрація</p>
+
+        <div class="card gate-card">
+            <p>Щоб зберігати прогрес і повертатись до уроків, спершу створи акаунт.</p>
+            <a href="register.html" class="btn">Зареєструватись і почати</a>
+        </div>
+
+        <div style="height: 32px;"></div>
+
+        <div class="lesson-list">
+            <div class="card lesson-item">
+                <div>
+                    <h3>Урок 1 · Привітання</h3>
+                    <p>Привіт, дякую, будь ласка, до побачення</p>
+                </div>
+                <span class="badge ready">Демо-урок</span>
+            </div>
+            <div class="card lesson-item locked">
+                <div>
+                    <h3>Урок 2 · Родина</h3>
+                    <p>Мама, тато, брат, сестра</p>
+                </div>
+                <span class="badge">🔒 Після реєстрації</span>
+            </div>
+            <div class="card lesson-item locked">
+                <div>
+                    <h3>Урок 3 · Побут</h3>
+                    <p>Дім, їжа, вода, робота</p>
+                </div>
+                <span class="badge">🔒 Після реєстрації</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 Міст. Проєкт для доступного спілкування.
+    </footer>
+
+</body>
+</html>

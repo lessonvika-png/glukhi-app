@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кабінет перекладача — Міст</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .progress-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .progress-card .count {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .progress-card .count-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            margin-bottom: 18px;
+        }
+
+        .record-zone {
+            border: 2px dashed #334155;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .record-zone.recording {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .word-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 32px;
+        }
+
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .status.confirmed {
+            background-color: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+        }
+
+        .status.pending {
+            background-color: rgba(148, 163, 184, 0.15);
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Міст 🤟</a>
+        <nav>
+            <a href="index.html#features">Можливості</a>
+            <a href="dovidnyk.html">Довідник спільноти</a>
+        </nav>
+        <div class="nav-auth">
+            <a href="register.html" class="btn-outline">Вийти</a>
+        </div>
+    </header>
+
+    <section class="page">
+        <h1>Кабінет перекладача</h1>
+        <p class="subtitle">Записуй слова та фрази українською жестовою мовою</p>
+
+        <div class="card progress-card">
+            <div>
+                <div class="count">3</div>
+                <div class="count-label">слів записано</div>
+            </div>
+            <div>
+                <div class="count">1</div>
+                <div class="count-label">підтверджено</div>
+            </div>
+            <div>
+                <div class="count">2</div>
+                <div class="count-label">на розгляді</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="field">
+                <label for="word">Слово або фраза</label>
+                <input type="text" id="word" placeholder="наприклад: дякую">
+            </div>
+
+            <div class="record-zone" id="record-zone" onclick="toggleRecording()">
+                🎥 Натисни, щоб почати запис через камеру
+            </div>
+
+            <button class="btn" onclick="alert('Збереження запису поки не підключено — це макет інтерфейсу.')">Зберегти запис</button>
+        </div>
+
+        <div class="word-list">
+            <div class="card word-item">
+                <span>Дякую</span>
+                <span class="status confirmed">Підтверджено</span>
+            </div>
+            <div class="card word-item">
+                <span>Привіт</span>
+                <span class="status pending">На розгляді</span>
+            </div>
+            <div class="card word-item">
+                <span>Допомога</span>
+                <span class="status pending">На розгляді</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 Міст. Проєкт для доступного спілкування.
+    </footer>
+
+    <script>
+        let recording = false;
+        function toggleRecording() {
+            recording = !recording;
+            const zone = document.getElementById('record-zone');
+            zone.classList.toggle('recording', recording);
+            zone.textContent = recording ? '⏺ Йде запис... натисни, щоб зупинити' : '🎥 Натисни, щоб почати запис через камеру';
+        }
+    </script>
+
+</body>
+</html>

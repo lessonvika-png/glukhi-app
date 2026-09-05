@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Переклад медіа — Міст</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tab-switch {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tab-switch button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab-switch button.active {
+            background-color: #38bdf8;
+            border-color: #38bdf8;
+            color: #0f172a;
+        }
+
+        .upload-zone {
+            border: 2px dashed #334155;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        [data-tab] {
+            display: none;
+        }
+
+        [data-tab].active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Міст 🤟</a>
+        <nav>
+            <a href="index.html#features">Можливості</a>
+            <a href="dovidnyk.html">Довідник спільноти</a>
+        </nav>
+        <div class="nav-auth">
+            <a href="register.html" class="btn-outline">Увійти</a>
+            <a href="register.html" class="btn">Реєстрація</a>
+        </div>
+    </header>
+
+    <section class="page">
+        <h1>Переклад медіа</h1>
+        <p class="subtitle">Завантаж відео, аудіо або встав посилання — отримай переклад жестовою мовою</p>
+
+        <div class="tab-switch">
+            <button type="button" class="active" onclick="setTab('file')">Файл</button>
+            <button type="button" onclick="setTab('link')">Посилання</button>
+        </div>
+
+        <div class="card">
+            <div data-tab="file" class="active">
+                <div class="upload-zone">
+                    📎 Перетягни відео чи аудіо файл сюди, або натисни, щоб обрати
+                </div>
+            </div>
+            <div data-tab="link">
+                <div class="field">
+                    <label for="media-url">Посилання на відео чи подкаст</label>
+                    <input type="url" id="media-url" placeholder="https://youtube.com/...">
+                </div>
+            </div>
+            <button class="btn" onclick="alert('Обробка медіа поки не підключена — це макет інтерфейсу.')">Перекласти</button>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 Міст. Проєкт для доступного спілкування.
+    </footer>
+
+    <script>
+        function setTab(tab) {
+            document.querySelectorAll('.tab-switch button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('[data-tab]').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
