@@ -123,6 +123,35 @@
             text-decoration: none;
         }
 
+        .form-message {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 18px;
+        }
+
+        .form-message.show {
+            display: block;
+        }
+
+        .form-message.error {
+            background-color: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .form-message.success {
+            background-color: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         [data-translator-only] {
             display: none;
         }
@@ -155,7 +184,9 @@
             Як перекладач ти зможеш записувати слова й фрази українською жестовою мовою, щоб допомогти навчити модель розпізнавання. Твої записи спершу перевірить модератор.
         </div>
 
-        <form onsubmit="event.preventDefault(); alert('Форма поки не підключена до бекенду — це макет інтерфейсу.');">
+        <div class="form-message" id="form-message"></div>
+
+        <form id="register-form">
             <div class="field">
                 <label for="name">Ім'я</label>
                 <input type="text" id="name" placeholder="Твоє ім'я" required>
@@ -179,7 +210,7 @@
                 <label for="consent-terms">Погоджуюсь з умовами використання та політикою конфіденційності.</label>
             </div>
 
-            <button type="submit" class="btn submit-btn">Зареєструватись</button>
+            <button type="submit" class="btn submit-btn" id="submit-btn">Зареєструватись</button>
         </form>
 
         <p class="switch-link">Вже маєш акаунт? <a href="#">Увійти</a></p>
@@ -190,7 +221,14 @@
     </footer>
 
     <script>
+        // Адреса бекенду. Поки що працюємо локально — коли бекенд буде задеплоєний
+        // на постійному сервері (Railway/Render), тут потрібно буде замінити на ту адресу.
+        const API_URL = "http://127.0.0.1:8000";
+
+        let currentRole = "korystuvach";
+
         function setRole(role) {
+            currentRole = role;
             document.body.classList.toggle('role-perekladach', role === 'perekladach');
             document.getElementById('btn-korystuvach').classList.toggle('active', role === 'korystuvach');
             document.getElementById('btn-perekladach').classList.toggle('active', role === 'perekladach');
@@ -201,6 +239,55 @@
         if (params.get('role') === 'perekladach') {
             setRole('perekladach');
         }
+
+        function showMessage(text, type) {
+            const box = document.getElementById('form-message');
+            box.textContent = text;
+            box.className = `form-message show ${type}`;
+        }
+
+        document.getElementById('register-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Реєструємо...';
+
+            const payload = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: currentRole,
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    // Бекенд повертає зрозуміле повідомлення про помилку у полі "detail"
+                    showMessage(data.detail || 'Щось пішло не так. Спробуй ще раз.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Зареєструватись';
+                    return;
+                }
+
+                showMessage(`Готово! Акаунт для ${data.email} створено.`, 'success');
+                document.getElementById('register-form').reset();
+                submitBtn.textContent = 'Зареєстровано ✓';
+
+            } catch (error) {
+                // Ця гілка спрацьовує, якщо бекенд взагалі недоступний (наприклад, сервер не запущений)
+                showMessage('Не вдалось з\'єднатись із сервером. Перевір, чи запущений бекенд.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Зареєструватись';
+            }
+        });
     </script>
 
 </body>
