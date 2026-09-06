@@ -180,6 +180,21 @@
                 showMessage(`Вхід успішний! Привіт, ${data.name}.`, 'success');
                 submitBtn.textContent = 'Увійдено ✓';
 
+                // Зберігаємо токен і дані користувача в браузері — це і є "запам'ятовування входу".
+                // localStorage не стирається при закритті вкладки чи перезавантаженні сторінки.
+                localStorage.setItem('mist_token', data.access_token);
+                localStorage.setItem('mist_user', JSON.stringify({
+                    id: data.id,
+                    name: data.name,
+                    email: data.email,
+                    role: data.role,
+                }));
+
+                // Через секунду переносимо на головну — щоб побачити результат входу одразу
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 800);
+
             } catch (error) {
                 showMessage('Не вдалось з\'єднатись із сервером. Перевір, чи запущений бекенд.', 'error');
                 submitBtn.disabled = false;

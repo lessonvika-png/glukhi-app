@@ -280,6 +280,20 @@
                 document.getElementById('register-form').reset();
                 submitBtn.textContent = 'Зареєстровано ✓';
 
+                // Зберігаємо токен — після реєстрації людина одразу вважається увійшла,
+                // не треба окремо ще раз вводити пароль на сторінці входу.
+                localStorage.setItem('mist_token', data.access_token);
+                localStorage.setItem('mist_user', JSON.stringify({
+                    id: data.id,
+                    name: data.name,
+                    email: data.email,
+                    role: data.role,
+                }));
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 800);
+
             } catch (error) {
                 // Ця гілка спрацьовує, якщо бекенд взагалі недоступний (наприклад, сервер не запущений)
                 showMessage('Не вдалось з\'єднатись із сервером. Перевір, чи запущений бекенд.', 'error');
