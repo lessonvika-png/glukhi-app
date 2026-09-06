@@ -47,7 +47,7 @@
         .record-zone {
             border: 2px dashed #334155;
             border-radius: 12px;
-            padding: 32px;
+            padding: 20px;
             text-align: center;
             color: #94a3b8;
             margin-bottom: 20px;
@@ -55,7 +55,46 @@
 
         .record-zone.recording {
             border-color: #ef4444;
+        }
+
+        video {
+            width: 100%;
+            max-width: 480px;
+            border-radius: 8px;
+            background-color: #000;
+            display: block;
+            margin: 0 auto 16px;
+        }
+
+        .record-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .record-status {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .record-status.live {
             color: #ef4444;
+            font-weight: 600;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn:disabled, .btn-outline:disabled, .btn-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .word-list {
@@ -126,11 +165,19 @@
                 <input type="text" id="word" placeholder="наприклад: дякую">
             </div>
 
-            <div class="record-zone" id="record-zone" onclick="toggleRecording()">
-                🎥 Натисни, щоб почати запис через камеру
+            <div class="record-zone" id="record-zone">
+                <p class="record-status" id="record-status">Натисни "Увімкнути камеру", щоб почати</p>
+                <video id="preview" autoplay muted playsinline style="display: none;"></video>
+                <video id="playback" controls playsinline style="display: none;"></video>
+                <div class="record-controls">
+                    <button class="btn-outline" id="btn-enable-camera" onclick="enableCamera()">Увімкнути камеру</button>
+                    <button class="btn-danger" id="btn-start-record" onclick="startRecording()" style="display: none;">⏺ Почати запис</button>
+                    <button class="btn-outline" id="btn-stop-record" onclick="stopRecording()" style="display: none;">⏹ Зупинити</button>
+                    <button class="btn-outline" id="btn-retake" onclick="retake()" style="display: none;">Перезаписати</button>
+                </div>
             </div>
 
-            <button class="btn" onclick="alert('Збереження запису поки не підключено — це макет інтерфейсу.')">Зберегти запис</button>
+            <button class="btn" id="btn-save" onclick="saveRecording()" disabled>Зберегти запис</button>
         </div>
 
         <div class="word-list">
@@ -154,14 +201,103 @@
     </footer>
 
     <script>
-        let recording = false;
-        function toggleRecording() {
-            recording = !recording;
-            const zone = document.getElementById('record-zone');
-            zone.classList.toggle('recording', recording);
-            zone.textContent = recording ? '⏺ Йде запис... натисни, щоб зупинити' : '🎥 Натисни, щоб почати запис через камеру';
+        let mediaStream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let recordedBlob = null;
+
+        const previewVideo = document.getElementById('preview');
+        const playbackVideo = document.getElementById('playback');
+        const statusText = document.getElementById('record-status');
+        const recordZone = document.getElementById('record-zone');
+
+        // Крок 1: попросити доступ до камери й показати живе відео (превʼю)
+        async function enableCamera() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            } catch (err) {
+                statusText.textContent = 'Не вдалось отримати доступ до камери. Перевір дозволи браузера.';
+                return;
+            }
+
+            previewVideo.srcObject = mediaStream;
+            previewVideo.style.display = 'block';
+            statusText.textContent = 'Камера увімкнена — готова до запису';
+
+            document.getElementById('btn-enable-camera').style.display = 'none';
+            document.getElementById('btn-start-record').style.display = 'inline-block';
+        }
+
+        // Крок 2: почати запис відео з потоку камери
+        function startRecording() {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(mediaStream, { mimeType: 'video/webm' });
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) recordedChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(recordedBlob);
+
+                previewVideo.style.display = 'none';
+                playbackVideo.src = url;
+                playbackVideo.style.display = 'block';
+
+                // Зупиняємо камеру — вона більше не потрібна, поки не натиснуть "Перезаписати"
+                mediaStream.getTracks().forEach(track => track.stop());
+
+                statusText.textContent = 'Запис завершено — перевір результат нижче';
+                recordZone.classList.remove('recording');
+
+                document.getElementById('btn-stop-record').style.display = 'none';
+                document.getElementById('btn-retake').style.display = 'inline-block';
+                document.getElementById('btn-save').disabled = false;
+            };
+
+            mediaRecorder.start();
+            recordZone.classList.add('recording');
+            statusText.textContent = '⏺ Йде запис...';
+            statusText.classList.add('live');
+
+            document.getElementById('btn-start-record').style.display = 'none';
+            document.getElementById('btn-stop-record').style.display = 'inline-block';
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            statusText.classList.remove('live');
+        }
+
+        // Дозволяє записати заново, якщо результат не сподобався
+        function retake() {
+            recordedBlob = null;
+            playbackVideo.style.display = 'none';
+            document.getElementById('btn-retake').style.display = 'none';
+            document.getElementById('btn-save').disabled = true;
+            statusText.textContent = 'Натисни "Увімкнути камеру", щоб почати';
+            document.getElementById('btn-enable-camera').style.display = 'inline-block';
+        }
+
+        // Поки що збереження на сервер не підключено — це наступний крок (потрібне
+        // окреме сховище для відео-файлів). Зараз просто підтверджуємо, що запис готовий.
+        function saveRecording() {
+            const word = document.getElementById('word').value.trim();
+            if (!word) {
+                alert('Спочатку введи слово або фразу.');
+                return;
+            }
+            if (!recordedBlob) {
+                alert('Спочатку запиши відео.');
+                return;
+            }
+            alert(`Відео для слова "${word}" готове (${(recordedBlob.size / 1024).toFixed(0)} КБ). Завантаження на сервер підключимо наступним кроком.`);
         }
     </script>
 
+    <script src="auth.js"></script>
 </body>
 </html>
