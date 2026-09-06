@@ -1,13 +1,14 @@
 import os
 from datetime import datetime, timedelta, timezone
 import jwt
-from fastapi import FastAPI, Depends, HTTPException, Header
+from fastapi import FastAPI, Depends, HTTPException, Header, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
 
-from models import User, SessionLocal
+from models import User, Recording, SessionLocal
+from youtube_upload import upload_video_bytes
 
 app = FastAPI()
 
@@ -149,3 +150,54 @@ def read_current_user(current_user: User = Depends(get_current_user)):
         "email": current_user.email,
         "role": current_user.role,
     }
+
+
+@app.post("/recordings")
+def create_recording(
+    word: str = Form(...),
+    video: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Приймає відео від перекладача, завантажує його на YouTube (unlisted),
+    і зберігає запис у базі даних зі статусом "на розгляді".
+    """
+    video_bytes = video.file.read()
+
+    try:
+        youtube_video_id = upload_video_bytes(video_bytes, title=word)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Не вдалось завантажити відео: {e}")
+
+    new_recording = Recording(
+        word=word,
+        youtube_video_id=youtube_video_id,
+        translator_id=current_user.id,
+        status="pending",
+    )
+    db.add(new_recording)
+    db.commit()
+    db.refresh(new_recording)
+
+    return {
+        "id": new_recording.id,
+        "word": new_recording.word,
+        "youtube_video_id": new_recording.youtube_video_id,
+        "status": new_recording.status,
+    }
+
+
+@app.get("/recordings/me")
+def list_my_recordings(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Повертає всі записи поточного перекладача — для показу в його кабінеті."""
+    recordings = db.query(Recording).filter(Recording.translator_id == current_user.id).order_by(Recording.created_at.desc()).all()
+    return [
+        {
+            "id": r.id,
+            "word": r.word,
+            "youtube_video_id": r.youtube_video_id,
+            "status": r.status,
+        }
+        for r in recordings
+    ]

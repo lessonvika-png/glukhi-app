@@ -3,3 +3,4 @@ backend/__pycache__/
 backend/app.db
 *.pyc
 backend/.env
+backend/client_secret.json
