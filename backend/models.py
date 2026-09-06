@@ -1,10 +1,14 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Файл бази даних буде створено автоматично поруч, назветься app.db
-DATABASE_URL = "sqlite:///./app.db"
+# Завантажуємо змінні з файлу .env (там лежить адреса бази даних Neon)
+load_dotenv()
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
@@ -20,5 +24,5 @@ class User(Base):
     role = Column(String, default="korystuvach")  # "korystuvach" або "perekladach"
 
 
-# Ця команда створює саму таблицю у файлі бази даних, якщо її ще нема
+# Ця команда створює саму таблицю у базі даних Neon, якщо її ще нема
 Base.metadata.create_all(bind=engine)
