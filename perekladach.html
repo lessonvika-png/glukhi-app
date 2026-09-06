@@ -136,7 +136,7 @@
             <a href="dovidnyk.html">Довідник спільноти</a>
         </nav>
         <div class="nav-auth">
-            <a href="register.html" class="btn-outline">Вийти</a>
+            <a href="#" class="btn-outline" onclick="logout(); return false;">Вийти</a>
         </div>
     </header>
 
@@ -181,18 +181,7 @@
         </div>
 
         <div class="word-list">
-            <div class="card word-item">
-                <span>Дякую</span>
-                <span class="status confirmed">Підтверджено</span>
-            </div>
-            <div class="card word-item">
-                <span>Привіт</span>
-                <span class="status pending">На розгляді</span>
-            </div>
-            <div class="card word-item">
-                <span>Допомога</span>
-                <span class="status pending">На розгляді</span>
-            </div>
+            <p style="color: #94a3b8;">Завантаження...</p>
         </div>
     </section>
 
@@ -201,6 +190,14 @@
     </footer>
 
     <script>
+        const API_URL = "https://glukhi-app-backend.onrender.com";
+
+        // Ця сторінка лише для перекладачів, які увійшли — перевіряємо одразу при завантаженні
+        if (!localStorage.getItem('mist_token')) {
+            alert('Спочатку увійди в акаунт, щоб потрапити в кабінет перекладача.');
+            window.location.href = 'login.html';
+        }
+
         let mediaStream = null;
         let mediaRecorder = null;
         let recordedChunks = [];
@@ -282,9 +279,16 @@
             document.getElementById('btn-enable-camera').style.display = 'inline-block';
         }
 
-        // Поки що збереження на сервер не підключено — це наступний крок (потрібне
-        // окреме сховище для відео-файлів). Зараз просто підтверджуємо, що запис готовий.
-        function saveRecording() {
+        // Реальне збереження: відправляємо слово + відео на бекенд.
+        // Бекенд сам завантажить відео на YouTube і збереже запис у базі даних.
+        async function saveRecording() {
+            const token = localStorage.getItem('mist_token');
+            if (!token) {
+                alert('Спочатку увійди в акаунт перекладача.');
+                window.location.href = 'login.html';
+                return;
+            }
+
             const word = document.getElementById('word').value.trim();
             if (!word) {
                 alert('Спочатку введи слово або фразу.');
@@ -294,8 +298,79 @@
                 alert('Спочатку запиши відео.');
                 return;
             }
-            alert(`Відео для слова "${word}" готове (${(recordedBlob.size / 1024).toFixed(0)} КБ). Завантаження на сервер підключимо наступним кроком.`);
+
+            const saveBtn = document.getElementById('btn-save');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Завантажуємо на YouTube... це може зайняти хвилину';
+
+            const formData = new FormData();
+            formData.append('word', word);
+            formData.append('video', recordedBlob, 'recording.webm');
+
+            try {
+                const response = await fetch(`${API_URL}/recordings`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert(data.detail || 'Не вдалось зберегти запис. Спробуй ще раз.');
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Зберегти запис';
+                    return;
+                }
+
+                saveBtn.textContent = 'Збережено ✓';
+                document.getElementById('word').value = '';
+                retake();
+                loadMyRecordings();
+
+            } catch (error) {
+                alert('Не вдалось з\'єднатись із сервером. Перевір інтернет-з\'єднання.');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Зберегти запис';
+            }
         }
+
+        // Завантажує і показує список уже записаних слів цього перекладача
+        async function loadMyRecordings() {
+            const token = localStorage.getItem('mist_token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_URL}/recordings/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+                if (!response.ok) return;
+
+                const recordings = await response.json();
+                const statusLabels = {
+                    pending: 'На розгляді',
+                    confirmed: 'Підтверджено',
+                    rejected: 'Відхилено',
+                };
+
+                const wordList = document.querySelector('.word-list');
+                wordList.innerHTML = recordings.map(r => `
+                    <div class="card word-item">
+                        <span>${r.word}</span>
+                        <span class="status ${r.status === 'confirmed' ? 'confirmed' : 'pending'}">${statusLabels[r.status] || r.status}</span>
+                    </div>
+                `).join('') || '<p style="color: #94a3b8;">Ще нема записів — почни з форми вище.</p>';
+
+                document.querySelector('.progress-card .count').textContent = recordings.length;
+            } catch (error) {
+                // Якщо не вдалось завантажити список — просто залишаємо, як є, не заважаємо роботі сторінки
+            }
+        }
+
+        // Завантажуємо список записів одразу при відкритті сторінки
+        loadMyRecordings();
     </script>
 
     <script src="auth.js"></script>
