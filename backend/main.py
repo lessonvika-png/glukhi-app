@@ -1,4 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException
+import os
+from datetime import datetime, timedelta, timezone
+import jwt
+from fastapi import FastAPI, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
@@ -7,6 +10,14 @@ from passlib.context import CryptContext
 from models import User, SessionLocal
 
 app = FastAPI()
+
+# Секретний ключ, яким підписуються токени — це "секретна печатка", яка підтверджує,
+# що токен видав саме наш сервер, а не хтось інший. Читається з .env / змінних середовища.
+# Якщо не задано — використовується запасний варіант (нормально для розробки,
+# але для продакшену варто задати власний SECRET_KEY в .env і на Render).
+SECRET_KEY = os.getenv("SECRET_KEY", "тимчасовий-ключ-для-розробки-заміни-мене")
+ALGORITHM = "HS256"
+TOKEN_LIFETIME_DAYS = 30
 
 # Дозволяємо фронтенду (сайту) звертатись до цього бекенду.
 # Поки що дозволяємо все ("*") для зручності розробки — коли сайт буде на постійному
@@ -28,6 +39,34 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# Створює токен-перепустку для конкретного користувача, дійсний 30 днів
+def create_access_token(user_id: int) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(days=TOKEN_LIFETIME_DAYS)
+    payload = {"sub": str(user_id), "exp": expire}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+# Ця функція перевіряє токен, який прийшов у заголовку запиту, і повертає користувача.
+# Якщо токена нема, він застарів, чи підроблений — повертає помилку 401.
+def get_current_user(authorization: str = Header(None), db: Session = Depends(get_db)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Потрібен вхід у систему")
+
+    token = authorization.replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = int(payload.get("sub"))
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Сесія застаріла, увійди знову")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Недійсний токен")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Користувача не знайдено")
+    return user
 
 
 # Опис того, які дані очікуємо отримати від форми реєстрації
@@ -69,7 +108,10 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
 
+    token = create_access_token(new_user.id)
+
     return {
+        "access_token": token,
         "id": new_user.id,
         "name": new_user.name,
         "email": new_user.email,
@@ -88,9 +130,22 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     if not user or not pwd_context.verify(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Неправильний email або пароль")
 
+    token = create_access_token(user.id)
+
     return {
+        "access_token": token,
         "id": user.id,
         "name": user.name,
         "email": user.email,
         "role": user.role,
+    }
+
+
+@app.get("/me")
+def read_current_user(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email,
+        "role": current_user.role,
     }
