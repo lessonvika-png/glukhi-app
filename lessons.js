@@ -4,7 +4,7 @@
 // opys — коротка підказка, як виконується жест (необов'язково).
 
 const WORDS = {
-    pryvit:      { text: 'Привіт',        youtube: '', video: '', opys: '' },
+    pryvit:      { text: 'Привіт',        youtube: 'FM54qigsNRs', video: '', opys: '' },
     diakuiu:     { text: 'Дякую',         youtube: '', video: '', opys: '' },
     bud_laska:   { text: 'Будь ласка',    youtube: '', video: '', opys: '' },
     do_pobachennia: { text: 'До побачення', youtube: '', video: '', opys: '' },
