@@ -50,6 +50,21 @@
             border-color: #38bdf8;
         }
 
+        a.lesson-item {
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        a.lesson-item:hover {
+            border-color: #38bdf8;
+        }
+
+        .badge.done {
+            color: #4ade80;
+            border-color: #4ade80;
+        }
+
         .gate-card {
             text-align: center;
             padding: 40px 28px;
@@ -87,14 +102,14 @@
         <div style="height: 32px;"></div>
 
         <div class="lesson-list">
-            <div class="card lesson-item">
+            <a href="urok.html?id=1" class="card lesson-item" data-lesson="1">
                 <div>
                     <h3>Урок 1 · Привітання</h3>
                     <p>Привіт, дякую, будь ласка, до побачення</p>
                 </div>
-                <span class="badge ready">Демо-урок</span>
-            </div>
-            <div class="card lesson-item locked">
+                <span class="badge ready">Демо-урок · Почати</span>
+            </a>
+            <div class="card lesson-item locked" data-lesson="2" data-href="urok.html?id=2">
                 <div>
                     <h3>Урок 2 · Родина</h3>
                     <p>Мама, тато, брат, сестра</p>
@@ -110,6 +125,45 @@
             </div>
         </div>
     </section>
+
+    <script src="auth.js"></script>
+    <script>
+        // Позначаємо пройдені уроки та відкриваємо закриті для тих, хто увійшов
+        document.addEventListener('DOMContentLoaded', () => {
+            let progress = {};
+            try { progress = JSON.parse(localStorage.getItem('mist_progress') || '{}'); } catch (e) {}
+            const loggedIn = Boolean(localStorage.getItem('mist_token'));
+
+            if (loggedIn) {
+                const gate = document.querySelector('.gate-card');
+                if (gate) gate.style.display = 'none';
+            }
+
+            document.querySelectorAll('[data-lesson]').forEach(el => {
+                const id = el.dataset.lesson;
+                let node = el;
+
+                if (el.classList.contains('locked') && loggedIn && el.dataset.href) {
+                    const link = document.createElement('a');
+                    link.href = el.dataset.href;
+                    link.className = 'card lesson-item';
+                    link.dataset.lesson = id;
+                    link.innerHTML = el.innerHTML;
+                    link.querySelector('.badge').className = 'badge ready';
+                    link.querySelector('.badge').textContent = 'Почати';
+                    el.replaceWith(link);
+                    node = link;
+                }
+
+                const p = progress[id];
+                if (p && p.done) {
+                    const badge = node.querySelector('.badge');
+                    badge.className = 'badge done';
+                    badge.textContent = `✓ Пройдено · ${p.best}%`;
+                }
+            });
+        });
+    </script>
 
     <footer>
         &copy; 2026 Міст. Проєкт для доступного спілкування.
